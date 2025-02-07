@@ -1,8 +1,35 @@
-﻿@{
+﻿@model IEnumerable<DestinyForum.Models.Discussion>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>Welcome to DestinyForum</h1>
+
+<p>
+    <a asp-action="Create" asp-controller="Discussions" class="btn btn-primary">Create New Post</a> @* New button *@
+</p>
+
+<div class="row">
+    @foreach (var discussion in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(discussion.ImageFilename))
+                    {
+                        <img src="~/images/@discussion.ImageFilename" alt="Discussion Image" class="img-thumbnail" style="max-width: 100%;" />
+                    }
+                    <h5 class="card-title">
+                        <a asp-action="GetDiscussion" asp-controller="Home" asp-route-id="@discussion.DiscussionId">@discussion.Title</a>
+                    </h5>
+                    <p class="card-text">@discussion.Content</p>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Comments: @discussion.Comments.Count</small>
+                        <small class="text-muted">Created: @discussion.CreateDate</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

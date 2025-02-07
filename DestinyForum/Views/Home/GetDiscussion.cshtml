@@ -1,0 +1,51 @@
+﻿@model DestinyForum.Models.Discussion
+
+@{
+    ViewData["Title"] = "Discussion Details"; // More specific title
+}
+<a asp-action="Index" asp-controller="Home">Back to Discussions</a> @* Link back to the home page *@
+<h1>@Model.Title</h1> @* Display the discussion title as the main heading *@
+
+<div>
+    <hr />
+
+    @if (!string.IsNullOrEmpty(Model.ImageFilename))
+    {
+        <img src="~/images/@Model.ImageFilename" alt="Discussion Image" style="max-width: 600px; max-height: 600px;" class="img-fluid mb-3" /> @* Larger image, responsive, margin below *@
+    }
+
+    <p>@Model.Content</p> @* Display the discussion content *@
+
+    <div class="mb-3">
+        @* Margin bottom for spacing *@
+        <small class="text-muted">Created: @Model.CreateDate</small>
+    </div>
+
+    <a asp-action="Create" asp-controller="Comments" asp-route-discussionId="@Model.DiscussionId" class="btn btn-primary">Add Comment</a> @* New button *@
+    <h3>Comments</h3>
+
+    @if (Model.Comments != null && Model.Comments.Any()) // Check for null and any comments
+    {
+        <div class="row">
+            @* Add a row to contain the cards *@
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="col-md-12">
+                    @* Make each card take full width (adjust as needed) *@
+                    <div class="card mb-3">
+                        @* Card with margin below for spacing *@
+                        <div class="card-body">
+                            <h5 class="card-title">@comment.CreateDate</h5> @* Comment date as card title *@
+                            <p class="card-text">@comment.Content</p> @* Comment content as card text *@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No comments yet.</p>
+        
+    }
+</div>

@@ -1,0 +1,31 @@
+﻿@model DestinyForum.Models.Comment
+
+@{
+    ViewData["Title"] = "Create";
+    int discussionId = ViewData["DiscussionId"] != null ? (int)ViewData["DiscussionId"] : Model?.DiscussionId ?? 0; // Get discussionId
+}
+
+<h2>Create Comment</h2>
+
+<form asp-action="Create" asp-controller="Comments">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="DiscussionId" value="@ViewData["DiscussionId"]" /> @* Hidden input for DiscussionId *@
+    <div class="form-group">
+        <label asp-for="Content" class="control-label"></label>
+        <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-controller="Home" asp-action="GetDiscussion">Go Back</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

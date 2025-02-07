@@ -1,32 +1,43 @@
-using System.Diagnostics;
-using DestinyForum.Models;
+using System.Linq; // For ordering
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; // For Include
+using DestinyForum.Models; // Your models
+using DestinyForum.Data; // Your DbContext
 
 namespace DestinyForum.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly DestinyForumContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(DestinyForumContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var discussions = await _context.Discussion
+                .Include(d => d.Comments) // Include comments for count
+                .OrderByDescending(d => d.CreateDate) // Order by date descending
+                .ToListAsync();
+
+            return View(discussions);
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> GetDiscussion(int id)
         {
-            return View();
-        }
+            var discussion = await _context.Discussion
+                .Include(d => d.Comments) // Include comments
+                .FirstOrDefaultAsync(d => d.DiscussionId == id);
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (discussion == null)
+            {
+                return NotFound(); // Handle if discussion not found
+            }
+
+            return View(discussion);
         }
     }
 }
