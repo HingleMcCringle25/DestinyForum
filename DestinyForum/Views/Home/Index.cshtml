@@ -7,27 +7,29 @@
 <h1>Welcome to DestinyForum</h1>
 
 <p>
-    <a asp-action="Create" asp-controller="Discussions" class="btn btn-primary">Create New Post</a> @* New button *@
+    <a asp-action="Create" asp-controller="Discussions" class="btn btn-primary">Create New Post</a> 
 </p>
 
 <div class="row">
     @foreach (var discussion in Model)
     {
         <div class="col-md-4">
-            <div class="card mb-4">
+            <div class="card mb-4 h-100">
                 <div class="card-body">
                     @if (!string.IsNullOrEmpty(discussion.ImageFilename))
                     {
-                        <img src="~/images/@discussion.ImageFilename" alt="Discussion Image" class="img-thumbnail" style="max-width: 100%;" />
+                        <img src="/images/@discussion.ImageFilename" alt="Discussion Image" class="img-thumbnail" />
                     }
                     <h5 class="card-title">
-                        <a asp-action="GetDiscussion" asp-controller="Home" asp-route-id="@discussion.DiscussionId">@discussion.Title</a>
+                        <a asp-action="GetDiscussion" asp-controller="Home" asp-route-id="@discussion.DiscussionId">
+                            @discussion.Title 
+                        </a>
                     </h5>
                     <p class="card-text">@discussion.Content</p>
-                    <div class="d-flex justify-content-between">
-                        <small class="text-muted">Comments: @discussion.Comments.Count</small>
-                        <small class="text-muted">Created: @discussion.CreateDate</small>
-                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <small>Comments: @discussion.Comments.Count</small>
+                    <small>Created: @discussion.CreateDate.ToString("dd/MM/yyyy")</small>
                 </div>
             </div>
         </div>

@@ -7,7 +7,7 @@ namespace DestinyForum.Models
         public int CommentId { get; set; }
         public string? Content { get; set; }
         public DateTime CreateDate { get; set; }
-        public int DiscussionId { get; set; } //Foreign key. the discussion id this comment belongs to
-        public Discussion? Discussion { get; set; } //navigation property. a comment belongs to one discussion
+        public int DiscussionId { get; set; } 
+        public Discussion? Discussion { get; set; } 
     }
 }

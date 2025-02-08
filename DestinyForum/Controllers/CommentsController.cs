@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering; // For SelectList
-using Microsoft.EntityFrameworkCore; // For Include (if needed later)
-using DestinyForum.Data; // Your DbContext
+using Microsoft.AspNetCore.Mvc.Rendering; 
+using Microsoft.EntityFrameworkCore; 
+using DestinyForum.Data; 
 using DestinyForum.Models;
 
 namespace DestinyForum.Controllers
@@ -18,11 +18,11 @@ namespace DestinyForum.Controllers
         }
 
         // GET: Comments/Create
-        public IActionResult Create(int discussionId) // Receive discussionId as a parameter
+        public IActionResult Create(int discussionId) 
         {
-            // Make sure the view knows which discussion it's for
-            ViewData["DiscussionId"] = discussionId;  // No need for a SelectList if it's predetermined
-            var comment = new Comment { DiscussionId = discussionId }; // Initialize DiscussionId
+            
+            ViewData["DiscussionId"] = discussionId;  
+            var comment = new Comment { DiscussionId = discussionId }; 
             return View(comment);
         }
 
@@ -37,12 +37,12 @@ namespace DestinyForum.Controllers
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
 
-                // Redirect to GetDiscussion - This will need to be adjusted once that action exists
-                return RedirectToAction("GetDiscussion", "Home", new { id = comment.DiscussionId }); // Correct redirect
+                
+                return RedirectToAction("GetDiscussion", "Home", new { id = comment.DiscussionId });
             }
 
-            // If model state isn't valid, redisplay the form with the entered data
-            ViewData["DiscussionId"] = comment.DiscussionId; // Preserve DiscussionId
+            
+            ViewData["DiscussionId"] = comment.DiscussionId; 
             return View(comment);
         }
     }

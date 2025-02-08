@@ -21,7 +21,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.ImageFilename)
             </th>
-            <th>Image</th>  @* New column header *@
+            <th>Image</th>
             <th>
                 @Html.DisplayNameFor(model => model.CreateDate)
             </th>
@@ -42,7 +42,6 @@
                     @Html.DisplayFor(modelItem => item.ImageFilename)
                 </td>
                 <td>
-                    @* New table cell for image *@
                     @if (!string.IsNullOrEmpty(item.ImageFilename))
                     {
                         <img src="~/images/@item.ImageFilename" alt="Discussion Image" style="max-width: 100px; max-height: 100px;" />

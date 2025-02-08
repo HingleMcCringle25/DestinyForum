@@ -1,51 +1,56 @@
 ﻿@model DestinyForum.Models.Discussion
 
 @{
-    ViewData["Title"] = "Discussion Details"; // More specific title
+    ViewData["Title"] = "Discussion Details";
 }
-<a asp-action="Index" asp-controller="Home">Back to Discussions</a> @* Link back to the home page *@
-<h1>@Model.Title</h1> @* Display the discussion title as the main heading *@
+<div class="background-container">
+    <div class="overlay"></div>
+    <div class="content-wrapper">
+        <a asp-action="Index" asp-controller="Home">Back to Discussions</a>
+        <h1>@Model.Title</h1>
 
-<div>
-    <hr />
+        <div>
+            <hr />
 
-    @if (!string.IsNullOrEmpty(Model.ImageFilename))
-    {
-        <img src="~/images/@Model.ImageFilename" alt="Discussion Image" style="max-width: 600px; max-height: 600px;" class="img-fluid mb-3" /> @* Larger image, responsive, margin below *@
-    }
-
-    <p>@Model.Content</p> @* Display the discussion content *@
-
-    <div class="mb-3">
-        @* Margin bottom for spacing *@
-        <small class="text-muted">Created: @Model.CreateDate</small>
-    </div>
-
-    <a asp-action="Create" asp-controller="Comments" asp-route-discussionId="@Model.DiscussionId" class="btn btn-primary">Add Comment</a> @* New button *@
-    <h3>Comments</h3>
-
-    @if (Model.Comments != null && Model.Comments.Any()) // Check for null and any comments
-    {
-        <div class="row">
-            @* Add a row to contain the cards *@
-            @foreach (var comment in Model.Comments)
+            @if (!string.IsNullOrEmpty(Model.ImageFilename))
             {
-                <div class="col-md-12">
-                    @* Make each card take full width (adjust as needed) *@
-                    <div class="card mb-3">
-                        @* Card with margin below for spacing *@
-                        <div class="card-body">
-                            <h5 class="card-title">@comment.CreateDate</h5> @* Comment date as card title *@
-                            <p class="card-text">@comment.Content</p> @* Comment content as card text *@
+                <img src="~/images/@Model.ImageFilename" alt="Discussion Image" style="max-width: 600px; max-height: 600px;" class="img-fluid mb-3" />
+            }
+
+            <p>@Model.Content</p>
+
+            <div class="mb-3">
+                <small class="card-footer">Created: @Model.CreateDate.ToString("dd/MM/yyyy")</small>
+            </div>
+
+            <a asp-action="Create" asp-controller="Comments" asp-route-discussionId="@Model.DiscussionId" class="btn btn-primary">Add Comment</a>
+            <h3>Comments</h3>
+
+            @if (Model.Comments != null && Model.Comments.Any())
+            {
+                <div class="row">
+            
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="col-md-12">
+                    
+                            <div class="card mb-3">
+                        
+                                <div class="card-body">
+                                    <h4 class="comment-posted">Posted by: User</h4> @*hard coded user for this*@
+                                    <p class="comment-text">@comment.Content</p>
+                                    <h5 class="comment-date">Posted on: @comment.CreateDate.ToString("dd/MM/yyyy")</h5>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             }
-        </div>
-    }
-    else
-    {
-        <p>No comments yet.</p>
+            else
+            {
+                <p>No comments yet.</p>
         
-    }
+            }
+        </div>
+    </div>
 </div>

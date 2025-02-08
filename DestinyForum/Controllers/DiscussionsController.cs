@@ -59,36 +59,30 @@ namespace DestinyForum.Controllers
             discussion.CreateDate = DateTime.Now;
             if (ModelState.IsValid)
             {
-                if (imageFile != null && imageFile.Length > 0) // Check if a file was uploaded
+                if (imageFile != null && imageFile.Length > 0)
                 {
-                    // 1. Generate unique filename
+                    //unique filename
                     string uniqueFileName = GenerateUniqueFileName(imageFile.FileName);
 
-                    // 2. Save image to wwwroot/images
+                    //save to wwwroot/images
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", uniqueFileName); // Corrected path
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(stream);
                     }
-
-                    // 3. Update Discussion object with filename
                     discussion.ImageFilename = uniqueFileName;
                 }
 
                 _context.Add(discussion);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index)); // Or wherever you want to redirect
+                return RedirectToAction(nameof(Index));
             }
             return View(discussion);
         }
 
         private string GenerateUniqueFileName(string fileName)
         {
-            // Use Guid or DateTime to create unique name
-            // Option 1: Using Guid
-            // return Guid.NewGuid().ToString() + "_" + fileName;
-
-            // Option 2: Using DateTime (more human-readable)
+            //using DateTime
             return DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + fileName;
         }
 
