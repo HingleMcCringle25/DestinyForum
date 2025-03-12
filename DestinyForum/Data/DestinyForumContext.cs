@@ -4,10 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DestinyForum.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DestinyForum.Data
 {
-    public class DestinyForumContext : DbContext
+    //I added Identity, but when adding the migration and updating the database, 
+    //thats where I get errors.
+
+    //I also created the Comment/Discussion table in sqlserver, updated the connection
+    //string in appsettings.json, and changed "UseSqlite" to "UseSqlServer" in program.cs
+    public class DestinyForumContext : IdentityDbContext
     {
         public DestinyForumContext (DbContextOptions<DestinyForumContext> options)
             : base(options)

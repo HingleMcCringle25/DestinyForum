@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using DestinyForum.Data;
+using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DestinyForumContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DestinyForumContext") ?? throw new InvalidOperationException("Connection string 'DestinyForumContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DestinyForumContext") ?? throw new InvalidOperationException("Connection string 'DestinyForumContext' not found.")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DestinyForumContext>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
