@@ -4,12 +4,12 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1 class="text-white">Create</h1>
 
-<h4>Discussion</h4>
+<h4 class="text-white">Discussion</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 text-white">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -26,7 +26,7 @@
                 <label asp-for="ImageFilename" class="control-label">Image</label>
                 <input type="file" name="imageFile" class="form-control" />
             </div>
-            <div class="form-group">
+            <div class="form-group mt-5">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

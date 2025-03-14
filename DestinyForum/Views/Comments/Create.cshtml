@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Create";
-    int discussionId = ViewData["DiscussionId"] != null ? (int)ViewData["DiscussionId"] : Model?.DiscussionId ?? 0;
+    int discussionId = ViewData["DiscussionId"] != null ? (ViewData["DiscussionId"] as int?) ?? Model?.DiscussionId ?? 0 : Model?.DiscussionId ?? 0;
 }
 
 <div class="background-container" style="background-image: url('/images/your-background-image.jpg'); background-size: cover; background-repeat: no-repeat; background-position: center center;">

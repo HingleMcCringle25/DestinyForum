@@ -7,25 +7,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DestinyForum.Data;
 using DestinyForum.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DestinyForum.Controllers
 {
+    [Authorize]
     public class DiscussionsController : Controller
     {
         private readonly DestinyForumContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DiscussionsController(DestinyForumContext context)
+        public DiscussionsController(DestinyForumContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Discussions
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Discussion.ToListAsync());
         }
 
-        // GET: Discussions/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,29 +48,33 @@ namespace DestinyForum.Controllers
             return View(discussion);
         }
 
-        // GET: Discussions/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Discussions/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Content,ImageFilename")] Discussion discussion, IFormFile imageFile) // Add IFormFile parameter
+        public async Task<IActionResult> Create([Bind("Title,Content,ImageFilename,ApplicationUserId")] Discussion discussion, IFormFile imageFile)
         {
             discussion.CreateDate = DateTime.Now;
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                discussion.ApplicationUserId = user.Id;
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "User not found.");
+            }
+
             if (ModelState.IsValid)
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    //unique filename
                     string uniqueFileName = GenerateUniqueFileName(imageFile.FileName);
-
-                    //save to wwwroot/images
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", uniqueFileName); // Corrected path
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", uniqueFileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await imageFile.CopyToAsync(stream);
@@ -77,16 +86,18 @@ namespace DestinyForum.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+
             return View(discussion);
         }
 
-        private string GenerateUniqueFileName(string fileName)
-        {
-            //using DateTime
-            return DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + fileName;
-        }
-
-        // GET: Discussions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -99,12 +110,16 @@ namespace DestinyForum.Controllers
             {
                 return NotFound();
             }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || discussion.ApplicationUserId != user.Id)
+            {
+                return Forbid();
+            }
+
             return View(discussion);
         }
 
-        // POST: Discussions/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DiscussionId,Title,Content,ImageFilename,CreateDate")] Discussion discussion)
@@ -112,6 +127,12 @@ namespace DestinyForum.Controllers
             if (id != discussion.DiscussionId)
             {
                 return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || discussion.ApplicationUserId != user.Id)
+            {
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -137,7 +158,6 @@ namespace DestinyForum.Controllers
             return View(discussion);
         }
 
-        // GET: Discussions/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -152,20 +172,32 @@ namespace DestinyForum.Controllers
                 return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || discussion.ApplicationUserId != user.Id)
+            {
+                return Forbid();
+            }
+
             return View(discussion);
         }
 
-        // POST: Discussions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var discussion = await _context.Discussion.FindAsync(id);
-            if (discussion != null)
+            if (discussion == null)
             {
-                _context.Discussion.Remove(discussion);
+                return NotFound();
             }
 
+            var user = await _userManager.GetUserAsync(User);
+            if (discussion.ApplicationUserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            _context.Discussion.Remove(discussion);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -173,6 +205,26 @@ namespace DestinyForum.Controllers
         private bool DiscussionExists(int id)
         {
             return _context.Discussion.Any(e => e.DiscussionId == id);
+        }
+
+        public async Task<IActionResult> MyThreads()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var discussions = await _context.Discussion
+                .Where(d => d.ApplicationUserId == user.Id)
+                .ToListAsync();
+
+            return View(discussions);
+        }
+
+        private string GenerateUniqueFileName(string fileName)
+        {
+            return DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + fileName;
         }
     }
 }

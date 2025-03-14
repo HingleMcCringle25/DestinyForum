@@ -1,0 +1,37 @@
+﻿@using DestinyForum.Data
+@{
+    ViewData["Title"] = "Profile";
+    var user = ViewData["User"] as ApplicationUser;
+    var discussions = ViewData["Discussions"] as List<Discussion>;
+}
+
+<h1 class="text-white">@user.Name's Profile</h1>
+
+@if (!string.IsNullOrEmpty(user.ImageFilename))
+{
+    <img src="~/images/@user.ImageFilename" alt="Profile Picture" style="max-width: 200px; max-height: 200px;" />
+}
+else
+{
+    <p class="text-white">No profile picture available.</p>
+}
+
+<p class="text-white"><strong>Location:</strong> @user.Location</p>
+
+<h2 class="text-white">@user.Name's Discussion Threads</h2>
+
+@if (discussions != null && discussions.Any())
+{
+    <ul>
+        @foreach (var discussion in discussions)
+        {
+            <li>
+                <a asp-action="GetDiscussion" asp-route-id="@discussion.DiscussionId">@discussion.Title</a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-white">@user.Name has not created any discussions yet.</p>
+}

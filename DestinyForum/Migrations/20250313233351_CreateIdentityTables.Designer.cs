@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DestinyForum.Migrations
 {
     [DbContext(typeof(DestinyForumContext))]
-    [Migration("20250311223022_IdentityCreate")]
-    partial class IdentityCreate
+    [Migration("20250313233351_CreateIdentityTables")]
+    partial class CreateIdentityTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
